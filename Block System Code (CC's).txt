@@ -1,0 +1,56 @@
+{{$bloqueados := 791275888695443496}}
+{{$dbXP := "user_LVL"}}
+{{$newhorario := currentTime.Add (toDuration (mult -3 .TimeHour))}}
+{{$t_S := $newhorario.Format "02 January 2006 15:04"}}
+{{$justification := (joinStr " " (slice .CmdArgs 1))}}
+{{if gt (len .CmdArgs) 1}}
+    {{$user := userArg (index .CmdArgs 0)}}
+    {{if (targetHasRoleID $user.ID $bloqueados)}}
+        {{deleteMessage nil (sendMessageRetID nil (joinStr "" "Removeu tag de bloqueado do " $user.Mention ".")) 20}}
+	{{$embed := cembed
+		"title" (joinStr "" "Um usuário foi desbloqueado")
+		"fields" (cslice
+			(sdict "name" "Nick: " "value" $user.String "inline" false)
+			(sdict "name" "ID: " "value" (toString $user.ID) "inline" false)
+			(sdict "name" "Horário: " "value" $t_S "inline" false)
+			(sdict "name" "Justificativa" "value" (joinStr "" "```" $justification "```") "inline" false))
+		"thumbnail" (sdict "url" ($user.AvatarURL "256"))
+		"color" 65280
+		"footer" (sdict "text" "Servidor do © Lyvon. Todos os direitos reservados." "icon_url" "https://cdn.discordapp.com/attachments/791127649849180160/826171947376705546/logo_discord000.gif")
+		}}
+		{{sendMessage 791035694667268136 $embed}}
+		{{sendMessage 791037610549706793 (joinStr "" "A block command was disabled.")}}
+        {{dbDel $user.ID "lyvon_key_block"}}
+        {{takeRoleID $user.ID $bloqueados}}
+    {{else}}
+        {{deleteMessage nil (sendMessageRetID nil (joinStr "" "Adicionou tag de bloqueado do " $user.Mention ".")) 20}}
+        {{dbSet $user.ID "lyvon_key_block" "value1"}}
+        {{giveRoleID $user.ID $bloqueados}}
+	{{takeRoleID $user.ID 717668618858397767}}
+	{{takeRoleID $user.ID 717668900782997528}}
+	{{takeRoleID $user.ID 805710217458876426}}
+	{{takeRoleID $user.ID 805709772422774805}}
+	{{takeRoleID $user.ID 805710388020772894}}
+	{{takeRoleID $user.ID 805710533696159774}}
+	{{takeRoleID $user.ID 805711116021661716}}
+	{{takeRoleID $user.ID 805711224728977468}}
+	{{takeRoleID $user.ID 805710768519512084}}
+	{{takeRoleID $user.ID 805712110729822230}}
+        {{$embed := cembed
+		"title" (joinStr "" "Um usuário foi bloqueado")
+		"fields" (cslice
+			(sdict "name" "Nick: " "value" $user.String "inline" false)
+			(sdict "name" "ID: " "value" (toString $user.ID) "inline" false)
+			(sdict "name" "Horário: " "value" $t_S "inline" false)
+			(sdict "name" "Justificativa" "value" (joinStr "" "```" $justification "```") "inline" false))
+		"thumbnail" (sdict "url" ($user.AvatarURL "256"))
+		"color" 16711680
+		"footer" (sdict "text" "Servidor do © Lyvon. Todos os direitos reservados." "icon_url" "https://cdn.discordapp.com/attachments/791127649849180160/826171947376705546/logo_discord000.gif")
+	}}
+	{{dbDel $user.ID $dbXP}}
+		{{sendMessage 791035694667268136 $embed}}
+		{{sendMessage 791037610549706793 (joinStr "" "A new block command was enabled.")}}
+    {{end}}
+{{else}}
+    {{deleteMessage nil (sendMessageRetID nil "Você precisa mandar !!block <usuário> ''Justificativa'' apenas.") 10}}
+{{end}}

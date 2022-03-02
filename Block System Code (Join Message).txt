@@ -1,0 +1,44 @@
+{{$avatar := (joinStr "" "https://cdn.discordapp.com/avatars/" (toString .User.ID) "/" .User.Avatar ".png") }}
+{{$embed := cembed
+"title" (joinStr "" "O `" .User.String "` acabou de entrar no grupo!")
+"description" ( joinStr "" "Seja bem vindo! Não se esqueça de ler todas as regras e verificar o tutorial do grupo!")
+"thumbnail" (sdict "url" $avatar)
+"color" 5373696
+}}
+{{sendMessage nil $embed}}
+
+{{$newhorario := currentTime.Add (toDuration (mult -3 .TimeHour))}}
+{{$t_S := $newhorario.Format "02 January 2006 15:04"}}
+{{$bloqueados := 791275888695443496}}
+
+
+{{if ($test := (dbGet .User.ID "lyvon_key_block").Value)}}
+{{giveRoleID .User.ID $bloqueados}}
+{{$embed := cembed
+"title" (joinStr "" "Registro de entrada")
+"description" (joinStr "" "```md\n" "< Usuário bloqueado >```")
+"fields" (cslice
+ (sdict "name" "Nick: " "value" .User.String "inline" false)
+ (sdict "name" "ID: " "value" (toString .User.ID) "inline" false)
+ (sdict "name" "Horário: " "value" $t_S "inline" false)
+)
+"thumbnail" (sdict "url" (.User.AvatarURL "256"))
+"color" 52224
+}}
+{{sendMessage 791033757380902943 $embed}}
+
+{{else}}
+
+{{$embed := cembed
+"title" (joinStr "" "Registro de entrada")
+"fields" (cslice
+ (sdict "name" "Nick: " "value" .User.String "inline" false)
+ (sdict "name" "ID: " "value" (toString .User.ID) "inline" false)
+ (sdict "name" "Horário: " "value" $t_S "inline" false)
+ (sdict "name" "Idade da conta:" "value" currentUserAgeHuman "inline" false)
+)
+"thumbnail" (sdict "url" (.User.AvatarURL "256"))
+"color" 52224
+}}
+{{sendMessage 791033757380902943 $embed}}
+{{end}}
