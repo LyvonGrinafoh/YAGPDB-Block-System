@@ -1,3 +1,4 @@
+{{/* Reccomended Trigger:(StartsWith) !!block */}}
 {{$bloqueados := 791275888695443496}}
 {{$dbXP := "user_LVL"}}
 {{$newhorario := currentTime.Add (toDuration (mult -3 .TimeHour))}}
